@@ -27,8 +27,12 @@ export async function getVM(name: string): Promise<VMInfo | null> {
   }
 }
 
-async function waitForOperation(operationName: string): Promise<void> {
-  while (true) {
+async function waitForOperation(
+  operationName: string,
+  timeoutMs = 15 * 60 * 1_000
+): Promise<void> {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
     const [op] = await zoneOps.get({
       project: process.env.PROJECT_ID!,
       zone: process.env.ZONE!,
@@ -42,6 +46,9 @@ async function waitForOperation(operationName: string): Promise<void> {
     }
     await new Promise((r) => setTimeout(r, 2_000));
   }
+  throw new Error(
+    `GCP operation ${operationName} timed out after ${timeoutMs / 60_000} minutes`
+  );
 }
 
 export async function createVM(name: string): Promise<void> {
