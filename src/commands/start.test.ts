@@ -64,6 +64,7 @@ test("handleStart: creates VM and reports IP on success", async () => {
   expect(mockCreateVM).toHaveBeenCalledTimes(1);
   const lastCall = (interaction.editReply.mock.calls.at(-1) as [string])[0];
   expect(lastCall).toContain("5.6.7.8:2456");
+  expect(mockDeleteFlag).toHaveBeenCalledWith("status/ready.flag");
 });
 
 test("handleStart: reports timeout if ready flag never appears", async () => {
