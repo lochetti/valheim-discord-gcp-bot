@@ -19,7 +19,7 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == "/shutdown":
             self.send_response(202)
             self.end_headers()
-            threading.Thread(target=run_stop, daemon=True).start()
+            threading.Thread(target=run_stop, daemon=False).start()
         else:
             self.send_response(404)
             self.end_headers()

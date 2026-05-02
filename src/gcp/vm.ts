@@ -57,6 +57,18 @@ export async function createVM(name: string): Promise<void> {
     "utf-8"
   );
 
+  const containerDeclaration = `spec:
+  containers:
+  - name: valheim
+    image: ${process.env.DOCKER_IMAGE}
+    env:
+    - name: BUCKET
+      value: ${process.env.BUCKET_NAME}
+    stdin: false
+    tty: false
+  hostNetwork: true
+  restartPolicy: Never`;
+
   const [operation] = await client.insert({
     project: process.env.PROJECT_ID!,
     zone: process.env.ZONE!,
@@ -68,7 +80,8 @@ export async function createVM(name: string): Promise<void> {
           boot: true,
           autoDelete: true,
           initializeParams: {
-            sourceImage: `projects/${process.env.PROJECT_ID}/global/images/${process.env.IMAGE_NAME}`,
+            sourceImage: "projects/cos-cloud/global/images/family/cos-stable",
+            diskSizeGb: "20",
           },
         },
       ],
@@ -77,10 +90,17 @@ export async function createVM(name: string): Promise<void> {
           accessConfigs: [{ type: "ONE_TO_ONE_NAT", name: "External NAT" }],
         },
       ],
+      serviceAccounts: [
+        {
+          email: "default",
+          scopes: ["https://www.googleapis.com/auth/cloud-platform"],
+        },
+      ],
       metadata: {
         items: [
           { key: "startup-script", value: startupScript },
           { key: "bucket-name", value: process.env.BUCKET_NAME! },
+          { key: "gce-container-declaration", value: containerDeclaration },
         ],
       },
     },

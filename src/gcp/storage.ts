@@ -15,6 +15,8 @@ export async function waitForFlag(
   while (Date.now() < deadline) {
     const [exists] = await bucket.file(path).exists();
     if (exists) return;
+    const remaining = Math.round((deadline - Date.now()) / 1000);
+    console.log(`[storage] waiting for ${path} (${remaining}s left)...`);
     await new Promise((r) => setTimeout(r, intervalMs));
   }
 
