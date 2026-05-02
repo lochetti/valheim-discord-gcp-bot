@@ -2,6 +2,7 @@
 set -euo pipefail
 
 : "${BUCKET:?BUCKET env var is required}"
+: "${SERVER_PASSWORD:?SERVER_PASSWORD env var is required}"
 
 echo "[entrypoint] Bucket: $BUCKET"
 
@@ -26,7 +27,7 @@ export LD_LIBRARY_PATH=/opt/valheim/linux64:${LD_LIBRARY_PATH:-}
 /opt/valheim/valheim_server.x86_64 \
   -name "Valheim Server" \
   -world "Dedicated" \
-  -password "changeme" \
+  -password "$SERVER_PASSWORD" \
   -savedir /opt/valheim/worlds \
   -port 2456 \
   -nographics \

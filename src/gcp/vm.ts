@@ -64,6 +64,8 @@ export async function createVM(name: string): Promise<void> {
     env:
     - name: BUCKET
       value: ${process.env.BUCKET_NAME}
+    - name: SERVER_PASSWORD
+      value: ${process.env.SERVER_PASSWORD}
     stdin: false
     tty: false
   hostNetwork: true

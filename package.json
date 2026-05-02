@@ -1,5 +1,5 @@
 {
-  "name": "gserver",
+  "name": "valheim-discord-gcp-bot",
   "module": "src/index.ts",
   "type": "module",
   "private": true,
