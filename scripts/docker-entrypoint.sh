@@ -37,21 +37,30 @@ VALHEIM_PID=$!
 
 echo "[entrypoint] Valheim PID: $VALHEIM_PID"
 
-for i in $(seq 1 18); do
-  if [ -f "/proc/$VALHEIM_PID/status" ]; then
-    echo "[entrypoint] Valheim process alive (attempt $i)"
-    break
-  fi
-  if [ "$i" -eq 18 ]; then
-    echo "[entrypoint] ERROR: Valheim failed to start after 3 minutes"
+# Wait up to 10 minutes for Valheim to finish loading the world.
+# "DungeonDB Start" appears in the log only after the world is fully loaded
+# and the server is ready to accept connections.
+READY=false
+for i in $(seq 1 120); do
+  if ! [ -f "/proc/$VALHEIM_PID/status" ]; then
+    echo "[entrypoint] ERROR: Valheim process died before becoming ready"
     exit 1
   fi
-  echo "[entrypoint] Waiting for Valheim to start (attempt $i/18)..."
-  sleep 10
+  if grep -q "Opened Steam server" /var/log/valheim.log 2>/dev/null; then
+    READY=true
+    break
+  fi
+  echo "[entrypoint] Waiting for world to load (attempt $i/120)..."
+  sleep 5
 done
 
+if [ "$READY" != "true" ]; then
+  echo "[entrypoint] ERROR: Valheim failed to become ready after 10 minutes"
+  exit 1
+fi
+
 echo "ready" | gsutil cp - "gs://$BUCKET/status/ready.flag"
-echo "[entrypoint] Ready flag written. Server is up."
+echo "[entrypoint] Ready flag written. Server is accepting connections."
 
 # Keep container alive — stop.sh (triggered via /shutdown) will write done.flag,
 # then the bot deletes the VM. Exiting here would kill stop.sh mid-cleanup.
