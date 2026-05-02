@@ -1,4 +1,4 @@
-# gserver — Valheim Discord Bot
+# valheim-discord-gcp-bot
 
 Discord bot that manages an on-demand Valheim dedicated server on GCP. The server only runs while you're playing — no idle costs.
 
