@@ -3,12 +3,13 @@ set -euo pipefail
 
 : "${BUCKET:?BUCKET env var is required}"
 : "${SERVER_PASSWORD:?SERVER_PASSWORD env var is required}"
+: "${SERVER_NAME:?SERVER_NAME env var is required}"
 
 echo "[entrypoint] Bucket: $BUCKET"
 
 # Clean stale flags
-gsutil -q rm "gs://$BUCKET/status/ready.flag" 2>/dev/null || true
-gsutil -q rm "gs://$BUCKET/status/done.flag" 2>/dev/null || true
+gsutil -q rm "gs://$BUCKET/status/$SERVER_NAME/ready.flag" 2>/dev/null || true
+gsutil -q rm "gs://$BUCKET/status/$SERVER_NAME/done.flag" 2>/dev/null || true
 
 # Sync world save from GCS
 echo "[entrypoint] Syncing world save from GCS..."
@@ -59,7 +60,7 @@ if [ "$READY" != "true" ]; then
   exit 1
 fi
 
-echo "ready" | gsutil cp - "gs://$BUCKET/status/ready.flag"
+echo "ready" | gsutil cp - "gs://$BUCKET/status/$SERVER_NAME/ready.flag"
 echo "[entrypoint] Ready flag written. Server is accepting connections."
 
 # Keep container alive — stop.sh (triggered via /shutdown) will write done.flag,
