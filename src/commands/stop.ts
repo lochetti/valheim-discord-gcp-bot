@@ -41,7 +41,7 @@ export async function handleStop(
     await interaction.editReply("🟡 Saving world & uploading to GCS...");
 
     try {
-      await waitForFlag("status/done.flag", 5 * 60 * 1_000);
+      await waitForFlag(`status/${process.env.VM_NAME}/done.flag`, 5 * 60 * 1_000);
     } catch {
       console.log("[stop] timed out waiting for done flag");
       await interaction.editReply(
@@ -51,7 +51,7 @@ export async function handleStop(
     }
 
     console.log("[stop] done flag found, deleting VM...");
-    await deleteFlag("status/done.flag");
+    await deleteFlag(`status/${process.env.VM_NAME}/done.flag`);
 
     await interaction.editReply("🟡 Deleting VM...");
     await deleteVM(process.env.VM_NAME!);

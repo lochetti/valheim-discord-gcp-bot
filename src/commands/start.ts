@@ -28,7 +28,7 @@ export async function handleStart(
     );
 
     try {
-      await waitForFlag("status/ready.flag", 10 * 60 * 1_000);
+      await waitForFlag(`status/${process.env.VM_NAME}/ready.flag`, 10 * 60 * 1_000);
     } catch {
       console.log("[start] timed out waiting for ready flag");
       await interaction.editReply(
@@ -38,7 +38,7 @@ export async function handleStart(
     }
 
     console.log("[start] ready flag found, fetching VM IP...");
-    await deleteFlag("status/ready.flag");
+    await deleteFlag(`status/${process.env.VM_NAME}/ready.flag`);
 
     const vm = await getVM(process.env.VM_NAME!);
     console.log(`[start] done, IP: ${vm?.ip}`);

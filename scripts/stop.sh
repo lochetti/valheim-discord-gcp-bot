@@ -3,6 +3,7 @@ set -euo pipefail
 
 # BUCKET must be set in the environment before calling this script
 : "${BUCKET:?BUCKET env var is required}"
+: "${SERVER_NAME:?SERVER_NAME env var is required}"
 
 echo "[stop] Stopping Valheim..."
 
@@ -37,5 +38,5 @@ echo "[stop] Uploading world save to GCS..."
 gsutil -m rsync -r /opt/valheim/worlds/ "gs://$BUCKET/saves/"
 
 # Write done flag — Discord bot is polling for this
-echo "done" | gsutil cp - "gs://$BUCKET/status/done.flag"
+echo "done" | gsutil cp - "gs://$BUCKET/status/$SERVER_NAME/done.flag"
 echo "[stop] Done flag written. Shutdown complete."
