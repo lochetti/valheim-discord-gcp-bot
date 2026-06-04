@@ -13,7 +13,7 @@ gsutil -q rm "gs://$BUCKET/status/$SERVER_NAME/done.flag" 2>/dev/null || true
 
 # Sync world save from GCS
 echo "[entrypoint] Syncing world save from GCS..."
-gsutil -m rsync -r "gs://$BUCKET/saves/" /opt/valheim/worlds/ 2>/dev/null || true
+gsutil -m rsync -r "gs://$BUCKET/saves/$SERVER_NAME/" /opt/valheim/worlds/ 2>/dev/null || true
 
 # Start shutdown HTTP server
 nohup python3 /opt/valheim/shutdown-server.py \

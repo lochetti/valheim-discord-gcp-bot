@@ -35,7 +35,7 @@ fi
 
 # Upload world save to GCS
 echo "[stop] Uploading world save to GCS..."
-gsutil -m rsync -r /opt/valheim/worlds/ "gs://$BUCKET/saves/"
+gsutil -m rsync -r /opt/valheim/worlds/ "gs://$BUCKET/saves/$SERVER_NAME/"
 
 # Write done flag — Discord bot is polling for this
 echo "done" | gsutil cp - "gs://$BUCKET/status/$SERVER_NAME/done.flag"
