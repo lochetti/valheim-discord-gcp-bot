@@ -6,12 +6,18 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 BUCKET = os.environ.get("BUCKET", "")
 PORT = 8080
+shutdown_lock = threading.Lock()
 
 
 def run_stop() -> None:
-    env = os.environ.copy()
-    env["BUCKET"] = BUCKET
-    subprocess.run(["/opt/valheim/stop.sh"], env=env, check=False)
+    if not shutdown_lock.acquire(blocking=False):
+        return
+    try:
+        env = os.environ.copy()
+        env["BUCKET"] = BUCKET
+        subprocess.run(["/opt/valheim/stop.sh"], env=env, check=False)
+    finally:
+        shutdown_lock.release()
 
 
 class Handler(BaseHTTPRequestHandler):
